@@ -19,7 +19,7 @@ provides(Sources,
 
 prefix = joinpath(BinDeps.depsdir(hts_engine), "usr")
 srcdir = joinpath(BinDeps.depsdir(hts_engine), "src",
-                  "hts_engine_API-$(libhts_engine_API_version)")
+                  "hts_engine_API-$(libhts_engine_API_version)", "src")
 
 provides(SimpleBuild,
           (@build_steps begin
