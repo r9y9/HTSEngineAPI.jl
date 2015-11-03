@@ -291,7 +291,6 @@ type HTS_Engine
 end
 
 macro htscall(f, rettype, argtypes, args...)
-    f = esc(f)
     args = map(esc, args)
     quote
         ccall(($f, HTSEngine.libhts_engine_API),
