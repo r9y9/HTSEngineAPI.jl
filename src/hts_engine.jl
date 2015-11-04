@@ -89,14 +89,14 @@ for (name, rettype) in [
 end
 
 for (name, rettype, argtype) in [
-                         (:get_msd_threshold, Cdouble, Csize_t),
-                         (:get_gv_weight, Cdouble, Csize_t)
-                         ]
+                                 (:get_msd_threshold, Cdouble, Csize_t),
+                                 (:get_gv_weight, Cdouble, Csize_t)
+                                 ]
     fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine, stream_index)
             @htscall($fsymbol, $rettype, (Ptr{HTS_Engine}, $argtype),
-                         &engine, stream_index)
+                     &engine, stream_index)
         end
     end
 end
