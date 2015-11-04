@@ -51,14 +51,14 @@ for (name, argtype) in [
     end
 end
 
-for (name, argtypes) in [
-                         (:set_msd_threshold, (Csize_t, Cdouble)),
-                         (:set_gv_weight, (Csize_t, Cdouble)),
+for (name, argt1, argt2) in [
+                         (:set_msd_threshold, Csize_t, Cdouble),
+                         (:set_gv_weight, Csize_t, Cdouble),
                          ]
     fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine, stream_index, val)
-            @htscall($fsymbol, Void, (Ptr{HTS_Engine}, ($argtypes)...),
+            @htscall($fsymbol, Void, (Ptr{HTS_Engine}, $argt1, $argt2),
                      &engine, stream_index, val)
         end
     end
