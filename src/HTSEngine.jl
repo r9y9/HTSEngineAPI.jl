@@ -51,8 +51,10 @@ export
     get_nstate,
     get_total_frame,
     get_nsamples,
+    get_generated_speech,
 
     synthesize_from_fn,
+    save_riff,
 
     refresh,
     clear
@@ -285,9 +287,16 @@ type HTS_Engine
     pss::HTS_PStreamSet
     gss::HTS_GStreamSet
     function HTS_Engine()
-        new(HTS_Condition(), HTS_Audio(), HTS_ModelSet(), HTS_Label(),
-            HTS_SStreamSet(), HTS_PStreamSet(), HTS_GStreamSet())
+        p = new(HTS_Condition(), HTS_Audio(), HTS_ModelSet(), HTS_Label(),
+                HTS_SStreamSet(), HTS_PStreamSet(), HTS_GStreamSet())
+        init(p)
+        return p
     end
+end
+
+function HTS_Engine(voices)
+    engine = HTS_Engine()
+    return load(engine, voices)
 end
 
 macro htscall(f, rettype, argtypes, args...)
@@ -303,6 +312,11 @@ function init(engine::HTS_Engine)
 end
 
 function load{T<:AbstractString}(engine::HTS_Engine, voices::Vector{T})
+    for voice in voices
+        if !isfile(voice)
+            error("$voice doesn't exists")
+        end
+    end
     c_voices = Vector{Vector{Cchar}}(length(voices))
     for i in 1 : length(voices)
         c_voices[i] = collect(voices[i])
@@ -316,6 +330,10 @@ function load{T<:AbstractString}(engine::HTS_Engine, voices::Vector{T})
     end
 
     engine
+end
+
+function load{T<:AbstractString}(engine::HTS_Engine, voice::T)
+    load(engine, [voice])
 end
 
 function set_sampling_frequency(engine::HTS_Engine, fs)
@@ -417,14 +435,29 @@ function get_nsamples(engine::HTS_Engine)
     signed(r)
 end
 
-function synthesize_from_fn(engine::HTS_Engine, filename)
+function get_generated_speech(engine::HTS_Engine, index)
+    @htscall(:HTS_Engine_get_generated_speech, Cdouble,
+             (Ptr{HTS_Engine}, Csize_t), &engine, index)
+end
+
+function synthesize_from_fn(engine::HTS_Engine, labelpath)
+    if !isfile(labelpath)
+        error("Input lable file doesn't exists")
+    end
     ret = @htscall(:HTS_Engine_synthesize_from_fn, HTS_Boolean,
-                   (Ptr{HTS_Engine}, Ptr{Cchar}),
-                   &engine, bytestring(filename))
+                   (Ptr{HTS_Engine}, Ptr{Cchar}), &engine, labelpath)
     r = convert(Bool, ret)
     if !r
         error("failed to synthesize waveform")
     end
+end
+
+function save_riff(engine::HTS_Engine, wavpath)
+    fp = ccall(:fopen, Ptr{Void}, (Ptr{Cchar}, Ptr{Cchar}), wavpath, "wb")
+    @assert fp != C_NULL
+    @htscall(:HTS_Engine_save_riff, Void,
+             (Ptr{HTS_Engine}, Ptr{Void}), &engine, fp)
+    ccall(:fclose, Void, (Ptr{Void},), fp)
 end
 
 function refresh(engine::HTS_Engine)
