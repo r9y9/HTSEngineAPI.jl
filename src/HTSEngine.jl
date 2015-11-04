@@ -28,7 +28,7 @@ export
     HTS_Condition,
 
     HTS_Engine,
-    init,
+    initialize,
     load,
 
     set_sampling_frequency,
@@ -45,6 +45,11 @@ export
     get_msd_threshold,
     set_gv_weight,
     get_gv_weight,
+    set_speed,
+    set_alpha,
+    get_alpha,
+    set_beta,
+    get_beta,
 
     get_nvoices,
     get_nstream,

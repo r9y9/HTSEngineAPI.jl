@@ -1,3 +1,5 @@
+### Internal types ###
+
 typealias HTS_Boolean Cchar
 
 immutable HTS_Audio

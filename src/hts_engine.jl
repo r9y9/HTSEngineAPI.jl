@@ -12,7 +12,7 @@ type HTS_Engine
     function HTS_Engine()
         p = new(HTS_Condition(), HTS_Audio(), HTS_ModelSet(), HTS_Label(),
                 HTS_SStreamSet(), HTS_PStreamSet(), HTS_GStreamSet())
-        init(p)
+        initialize(p)
         return p
     end
 end
@@ -22,9 +22,85 @@ function HTS_Engine(voices)
     return load(engine, voices)
 end
 
-function init(engine::HTS_Engine)
-    @htscall(:HTS_Engine_initialize, Void, (Ptr{HTS_Engine},), &engine)
+for name in [:initialize, :refresh, :clear]
+    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    @eval begin
+        function $name(engine::HTS_Engine)
+            @htscall($fsymbol, Void, (Ptr{HTS_Engine},), &engine)
+        end
+    end
 end
+
+### Setter ###
+
+for (name, argtype) in [
+                         (:set_sampling_frequency, Csize_t),
+                         (:set_fperiod, Csize_t),
+                         (:set_audio_buff_size, Csize_t),
+                         (:set_stop_flag, HTS_Boolean),
+                         (:set_volume, Cdouble),
+                         (:set_speed, Cdouble),
+                         (:set_alpha, Cdouble),
+                         (:set_beta, Cdouble)
+                         ]
+    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    @eval begin
+        function $name(engine::HTS_Engine, val)
+            @htscall($fsymbol, Void, (Ptr{HTS_Engine}, $argtype), &engine)
+        end
+    end
+end
+
+for (name, argtypes) in [
+                         (:set_msd_threshold, (Csize_t, Cdouble)),
+                         (:set_gv_weight, (Csize_t, Cdouble)),
+                         ]
+    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    @eval begin
+        function $name(engine::HTS_Engine, stream_index, val)
+            @htscall($fsymbol, Void, (Ptr{HTS_Engine}, ($argtypes)...),
+                     &engine, stream_index, val)
+        end
+    end
+end
+
+### Getter ###
+
+for (name, rettype) in [
+                         (:get_sampling_frequency, Csize_t),
+                         (:get_fperiod, Csize_t),
+                         (:get_audio_buff_size, Csize_t),
+                         (:get_volume, Cdouble),
+                         (:get_alpha, Cdouble),
+                         (:get_beta, Cdouble),
+                         (:get_nvoices, Csize_t),
+                         (:get_nstream, Csize_t),
+                         (:get_nstate, Csize_t),
+                         (:get_total_frame, Csize_t),
+                         (:get_nsamples, Csize_t)
+                         ]
+    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    @eval begin
+        function $name(engine::HTS_Engine)
+            r = @htscall($fsymbol, $rettype, (Ptr{HTS_Engine},), &engine)
+            @signed r # for convenience
+        end
+    end
+end
+
+for (name, rettype, argtype) in [
+                         (:get_msd_threshold, Cdouble, Csize_t),
+                         (:get_gv_weight, Cdouble, Csize_t)
+                         ]
+    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    @eval begin
+        function $name(engine::HTS_Engine, stream_index)
+            @htscall($fsymbol, $rettype, (Ptr{HTS_Engine}, $argtype),
+                         &engine, stream_index)
+        end
+    end
+end
+
 
 function load{T<:AbstractString}(engine::HTS_Engine, voices::Vector{T})
     for voice in voices
@@ -51,109 +127,18 @@ function load{T<:AbstractString}(engine::HTS_Engine, voice::T)
     load(engine, [voice])
 end
 
-function set_sampling_frequency(engine::HTS_Engine, fs)
-    @htscall(:HTS_Engine_set_sampling_frequency, Void,
-             (Ptr{HTS_Engine}, Csize_t), &engine, fs)
-end
-
-function get_sampling_frequency(engine::HTS_Engine)
-    fs = @htscall(:HTS_Engine_get_sampling_frequency, Csize_t,
-                  (Ptr{HTS_Engine},), &engine)
-    signed(fs)
-end
-
-function set_fperiod(engine::HTS_Engine, fperiod)
-    @htscall(:HTS_Engine_set_fperiod, Void,
-             (Ptr{HTS_Engine}, Csize_t), &engine, fperiod)
-end
-
-function get_fperiod(engine::HTS_Engine)
-    fp = @htscall(:HTS_Engine_get_fperiod, Csize_t, (Ptr{HTS_Engine},), &engine)
-    signed(fp)
-end
-
-function set_audio_buff_size(engine::HTS_Engine, buff_size)
-    @htscall(:HTS_Engine_set_audio_buff_size, Void,
-             (Ptr{HTS_Engine}, Csize_t), &engine, buff_size)
-end
-
-function get_audio_buff_size(engine::HTS_Engine)
-    bs = @htscall(:HTS_Engine_get_audio_buff_size, Csize_t,
-                  (Ptr{HTS_Engine},), &engine)
-    signed(bs)
-end
-
-function set_stop_flag(engine::HTS_Engine, stop_flag::Bool)
-    @htscall(:HTS_Engine_set_stop_flag, Void,
-             (Ptr{HTS_Engine}, HTS_Boolean), &engine, stop_flag)
-end
-
 function get_stop_flag(engine::HTS_Engine)
     stop_flag = @htscall(:HTS_Engine_get_stop_flag, HTS_Boolean,
                          (Ptr{HTS_Engine},), &engine)
     convert(Bool, stop_flag)
 end
 
-function set_volume(engine::HTS_Engine, volume)
-    @htscall(:HTS_Engine_set_volume, Void,
-             (Ptr{HTS_Engine}, Cdouble), &engine, volume)
-end
-
-function get_volume(engine::HTS_Engine)
-    @htscall(:HTS_Engine_get_volume, Cdouble, (Ptr{HTS_Engine},), &engine)
-end
-
-function set_msd_threshold(engine::HTS_Engine, stream_index, msd_threshold)
-    @htscall(:HTS_Engine_set_msd_threshold, Void,
-             (Ptr{HTS_Engine}, Csize_t, Cdouble),
-             &engine, stream_index, msd_threshold)
-end
-
-function get_msd_threshold(engine::HTS_Engine, stream_index)
-    @htscall(:HTS_Engine_get_msd_threshold, Cdouble,
-             (Ptr{HTS_Engine}, Csize_t), &engine, stream_index)
-end
-
-function set_gv_weight(engine::HTS_Engine, stream_index, gv_weight)
-    @htscall(:HTS_Engine_set_gv_weight, Void,
-             (Ptr{HTS_Engine}, Csize_t, Cdouble),
-             &engine, stream_index, gv_weight)
-end
-
-function get_gv_weight(engine::HTS_Engine, stream_index)
-    @htscall(:HTS_Engine_get_gv_weight, Cdouble,
-             (Ptr{HTS_Engine}, Csize_t), &engine, stream_index)
-end
-
-function get_nvoices(engine::HTS_Engine)
-    r = @htscall(:HTS_Engine_get_nvoices, Csize_t, (Ptr{HTS_Engine},), &engine)
-    signed(r)
-end
-
-function get_nstream(engine::HTS_Engine)
-    r = @htscall(:HTS_Engine_get_nstream, Csize_t, (Ptr{HTS_Engine},), &engine)
-    signed(r)
-end
-
-function get_nstate(engine::HTS_Engine)
-    r = @htscall(:HTS_Engine_get_nstate, Csize_t, (Ptr{HTS_Engine},), &engine)
-    signed(r)
-end
-
-function get_total_frame(engine::HTS_Engine)
-    r = @htscall(:HTS_Engine_get_total_frame, Csize_t, (Ptr{HTS_Engine},), &engine)
-    signed(r)
-end
-
-function get_nsamples(engine::HTS_Engine)
-    r = @htscall(:HTS_Engine_get_nsamples, Csize_t, (Ptr{HTS_Engine},), &engine)
-    signed(r)
-end
-
 function get_generated_speech(engine::HTS_Engine, index)
     @htscall(:HTS_Engine_get_generated_speech, Cdouble,
              (Ptr{HTS_Engine}, Csize_t), &engine, index)
 end
+
+### Synthesize ###
 
 function synthesize_from_fn(engine::HTS_Engine, labelpath)
     if !isfile(labelpath)
@@ -173,12 +158,4 @@ function save_riff(engine::HTS_Engine, wavpath)
     @htscall(:HTS_Engine_save_riff, Void,
              (Ptr{HTS_Engine}, Ptr{Void}), &engine, fp)
     ccall(:fclose, Void, (Ptr{Void},), fp)
-end
-
-function refresh(engine::HTS_Engine)
-    @htscall(:HTS_Engine_refresh, Void, (Ptr{HTS_Engine},), &engine)
-end
-
-function clear(engine::HTS_Engine)
-    @htscall(:HTS_Engine_clear, Void, (Ptr{HTS_Engine},), &engine)
 end
