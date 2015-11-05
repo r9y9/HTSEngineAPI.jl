@@ -1,4 +1,4 @@
-using HTSEngine
+using HTSEngineAPI
 using Base.Test
 
 using WAV
@@ -11,7 +11,7 @@ labelpath = joinpath(dirname(@__FILE__), "data","nitech_jp_atr503_m001_a01.lab")
 ### Tests ###
 
 function test_hts_engine_synthesis_funcs()
-    engine = HTS_Engine(mei_htsvoice)
+    engine = HTSEngine(mei_htsvoice)
 
     # From filepath
     synthesize_from_fn(engine, labelpath)
@@ -30,20 +30,21 @@ function test_hts_engine_synthesis_funcs()
 end
 
 function test_hts_engine_fullcontext_label()
-    engine = HTS_Engine(mei_htsvoice)
+    engine = HTSEngine(mei_htsvoice)
     @test get_fullcontext_label_format(engine) == "HTS_TTS_JPN"
     @test get_fullcontext_label_version(engine) == "1.0"
 end
 
 function test_hts_engine_save()
-    engine = HTS_Engine(mei_htsvoice)
+    engine = HTSEngine(mei_htsvoice)
     synthesize_from_fn(engine, labelpath)
 
     for savefunc in [
-                 save_information,
-                 save_label,
-                 save_generated_speech,
-                 save_riff]
+                     save_information,
+                     save_label,
+                     save_generated_speech,
+                     save_riff
+                     ]
         file = tempname()
         savefunc(engine, file)
         @test isfile(file)
@@ -55,7 +56,7 @@ end
 
 function test_hts_engine_synthesis_and_save_wav()
     # Load htsvoice
-    engine = HTS_Engine(mei_htsvoice)
+    engine = HTSEngine(mei_htsvoice)
     @test get_sampling_frequency(engine) == 48000
     @test get_fperiod(engine) == 240
 

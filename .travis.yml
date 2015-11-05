@@ -11,4 +11,4 @@ notifications:
 # uncomment the following lines to override the default test script
 #script:
 #  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("HTSEngine"); Pkg.test("HTSEngine"; coverage=true)'
+#  - julia -e 'Pkg.clone(pwd()); Pkg.build("HTSEngineAPI"); Pkg.test("HTSEngineAPI"; coverage=true)'

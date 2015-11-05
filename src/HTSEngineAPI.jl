@@ -1,13 +1,14 @@
 __precompile__(@unix? true : false)
 
 """
-HTSEngine is a wrapper of hts_engine_API that provides speech waveform
+HTSEngineAPI is a wrapper of hts_engine_API that provides speech waveform
 synthesis from Hidden Markov Models (HMMs)  trained by the HMM-based
 speech synthesis system (HTS).
 """
-module HTSEngine
+module HTSEngineAPI
 
 export
+    # Internal types
     HTS_Audio,
     HTS_Window,
     HTS_Pattern,
@@ -27,10 +28,15 @@ export
     HTS_GStreamSet,
     HTS_Condition,
 
-    HTS_Engine,
+    # The speech synthesis engine
+    HTSEngine,
+
     initialize,
     load,
+    refresh,
+    clear,
 
+    # Set/Get parameters of HTS engine
     set_sampling_frequency,
     get_sampling_frequency,
     set_fperiod,
@@ -71,34 +77,33 @@ export
     get_generated_parameter,
     get_generated_speech,
 
+    # Synthesis
     synthesize_from_fn,
     synthesize_from_strings,
 
+    # Save
     save_information,
     save_label,
     save_generated_parameter,
     save_generated_speech,
-    save_riff,
-
-    refresh,
-    clear
+    save_riff
 
 using BinDeps
 
 # Load dependency
-deps = joinpath(Pkg.dir("HTSEngine"), "deps", "deps.jl")
+deps = joinpath(Pkg.dir("HTSEngineAPI"), "deps", "deps.jl")
 if isfile(deps)
     include(deps)
 else
-    error("HTSEngine not properly installed. Please run Pkg.build(\"HTSEngine\")")
+    error("HTSEngineAPI not properly installed. Please run Pkg.build(\"HTSEngineAPI\")")
 end
 
 for fname in [
-              "macro",
-              "internal",
-              "hts_engine"
+              "macros",
+              "internals",
+              "htsengine"
               ]
     include(string(fname, ".jl"))
 end
 
-end # module HTSEngine
+end # module HTSEngineAPI

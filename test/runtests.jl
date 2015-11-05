@@ -1,4 +1,4 @@
-using HTSEngine
+using HTSEngineAPI
 using Base.Test
 
-include("hts_engine.jl")
+include("htsengine.jl")
