@@ -2,7 +2,7 @@ __precompile__(@unix? true : false)
 
 """
 HTSEngineAPI is a wrapper of hts_engine_API that provides speech waveform
-synthesis from Hidden Markov Models (HMMs)  trained by the HMM-based
+synthesis from Hidden Markov Models (HMMs) trained by the HMM-based
 speech synthesis system (HTS).
 """
 module HTSEngineAPI
