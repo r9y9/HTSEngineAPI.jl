@@ -29,7 +29,7 @@ export
     HTS_Condition,
 
     # The speech synthesis engine
-    HTSEngine,
+    HTS_Engine,
 
     initialize,
     load,

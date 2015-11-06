@@ -11,14 +11,14 @@ labelpath = joinpath(dirname(@__FILE__), "data","nitech_jp_atr503_m001_a01.lab")
 ### Tests ###
 
 function test_hts_engine_setup()
-    engine = HTSEngine()
+    engine = HTS_Engine()
     load(engine, mei_htsvoice)
     @test_throws Exception load(engine, "doesnt_exists.htsvoice")
-    engine = HTSEngine(mei_htsvoice)
+    engine = HTS_Engine(mei_htsvoice)
 end
 
 function test_hts_engine_properties()
-    engine = HTSEngine()
+    engine = HTS_Engine()
 
     for (name, val) in [
                         (:sampling_frequency, 48000),
@@ -42,7 +42,7 @@ function test_hts_engine_properties()
     set_phoneme_alignment_flag(engine, false)
     add_half_tone(engine, 0.5)
 
-    engine = HTSEngine(mei_htsvoice)
+    engine = HTS_Engine(mei_htsvoice)
 
     for stream_index in 1:get_nstream(engine)
         for (name, val) in [
@@ -102,7 +102,7 @@ function test_hts_engine_properties()
 end
 
 function test_hts_engine_synthesis_funcs()
-    engine = HTSEngine(mei_htsvoice)
+    engine = HTS_Engine(mei_htsvoice)
 
     # From filepath
     synthesize_from_fn(engine, labelpath)
@@ -123,13 +123,13 @@ function test_hts_engine_synthesis_funcs()
 end
 
 function test_hts_engine_fullcontext_label()
-    engine = HTSEngine(mei_htsvoice)
+    engine = HTS_Engine(mei_htsvoice)
     @test get_fullcontext_label_format(engine) == "HTS_TTS_JPN"
     @test get_fullcontext_label_version(engine) == "1.0"
 end
 
 function test_hts_engine_save()
-    engine = HTSEngine(mei_htsvoice)
+    engine = HTS_Engine(mei_htsvoice)
     synthesize_from_fn(engine, labelpath)
 
     for savefunc in [
@@ -156,7 +156,7 @@ end
 
 function test_hts_engine_synthesis_and_save_wav()
     # Load htsvoice
-    engine = HTSEngine(mei_htsvoice)
+    engine = HTS_Engine(mei_htsvoice)
     @test get_sampling_frequency(engine) == 48000
     @test get_fperiod(engine) == 240
 

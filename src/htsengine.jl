@@ -1,7 +1,7 @@
 """
-HTSEngine is the main interface for hts_engine_API
+HTS_Engine is the main interface for hts_engine_API
 """
-type HTSEngine
+type HTS_Engine
     condition::HTS_Condition
     audio::HTS_Audio
     ms::HTS_ModelSet
@@ -9,7 +9,7 @@ type HTSEngine
     sss::HTS_SStreamSet
     pss::HTS_PStreamSet
     gss::HTS_GStreamSet
-    function HTSEngine()
+    function HTS_Engine()
         p = new(HTS_Condition(), HTS_Audio(), HTS_ModelSet(), HTS_Label(),
                 HTS_SStreamSet(), HTS_PStreamSet(), HTS_GStreamSet())
         initialize(p)
@@ -18,11 +18,8 @@ type HTSEngine
     end
 end
 
-# NOTE: `HTSEngine` is a Julia equivalent type of C-struct `HTS_Engine`
-typealias HTS_Engine HTSEngine
-
-function HTSEngine(voices)
-    engine = HTSEngine()
+function HTS_Engine(voices)
+    engine = HTS_Engine()
     return load(engine, voices)
 end
 
