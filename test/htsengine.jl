@@ -10,6 +10,81 @@ labelpath = joinpath(dirname(@__FILE__), "data","nitech_jp_atr503_m001_a01.lab")
 
 ### Tests ###
 
+function test_hts_engine_properties()
+    engine = HTSEngine()
+    for (name, val) in [
+                        (:sampling_frequency, 48000),
+                        (:fperiod, 240),
+                        (:audio_buff_size, 10),
+                        (:stop_flag, false),
+                        (:volume, 2.0),
+                        (:alpha, 0.42),
+                        (:beta, 0.01)
+                       ]
+        setter = eval(symbol(:set_, name))
+        getter = eval(symbol(:get_, name))
+        println("test setter/getter property: $name")
+
+        setter(engine, val)
+        @test_approx_eq getter(engine) val
+    end
+
+    # no throws
+    set_speed(engine, 0.7)
+    set_phoneme_alignment_flag(engine, false)
+    add_half_tone(engine, 0.5)
+
+    engine = HTSEngine(mei_htsvoice)
+
+    for stream_index in 1:get_nstream(engine)
+        for (name, val) in [
+                            (:msd_threshold, 0.5),
+                            (:gv_weight, 0.5)
+                            ]
+            setter = eval(symbol(:set_, name))
+            getter = eval(symbol(:get_, name))
+            println("test setter/getter property: $name")
+
+            setter(engine, stream_index, val)
+            @test_approx_eq getter(engine, stream_index) val
+        end
+    end
+
+    for voice_index in 1:get_nvoices(engine)
+        for (name, val) in [
+                            (:duration_interpolation_weight, 0.5)
+                            ]
+            setter = eval(symbol(:set_, name))
+            getter = eval(symbol(:get_, name))
+            println("test setter/getter property: $name")
+
+            setter(engine, voice_index, val)
+            @test_approx_eq getter(engine, voice_index) val
+        end
+    end
+
+    for voice_index in 1:get_nvoices(engine)
+        for stream_index in 1:get_nstream(engine)
+            for (name, val) in [
+                                (:parameter_interpolation_weight, 0.5),
+                                (:gv_interpolation_weight, 0.5)
+                                ]
+                setter = eval(symbol(:set_, name))
+                getter = eval(symbol(:get_, name))
+                println("test setter/getter property: $name")
+
+                setter(engine, voice_index, stream_index, val)
+                @test_approx_eq getter(engine, voice_index, stream_index) val
+            end
+        end
+    end
+
+    clear(engine)
+end
+
+info("test: hts engine properties")
+test_hts_engine_properties()
+
 function test_hts_engine_synthesis_funcs()
     engine = HTSEngine(mei_htsvoice)
 

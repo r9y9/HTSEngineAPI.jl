@@ -52,6 +52,7 @@ export
     set_gv_weight,
     get_gv_weight,
     set_speed,
+    set_phoneme_alignment_flag,
     set_alpha,
     get_alpha,
     set_beta,
