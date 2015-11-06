@@ -136,6 +136,13 @@ function test_hts_engine_save()
         rm(file)
     end
 
+    for stream_index = 1:get_nstream(engine)
+        file = tempname()
+        save_generated_parameter(engine, stream_index, file)
+        @test isfile(file)
+        rm(file)
+    end
+
     clear(engine)
 end
 
