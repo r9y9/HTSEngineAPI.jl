@@ -10,6 +10,13 @@ labelpath = joinpath(dirname(@__FILE__), "data","nitech_jp_atr503_m001_a01.lab")
 
 ### Tests ###
 
+function test_hts_engine_setup()
+    engine = HTSEngine()
+    load(engine, mei_htsvoice)
+    @test_throws Exception load(engine, "doesnt_exists.htsvoice")
+    engine = HTSEngine(mei_htsvoice)
+end
+
 function test_hts_engine_properties()
     engine = HTSEngine()
 
@@ -99,6 +106,7 @@ function test_hts_engine_synthesis_funcs()
 
     # From filepath
     synthesize_from_fn(engine, labelpath)
+    @test_throws Exception synthesize_from_fn(engine, "doesnt_exists.lab")
 
     synthesized_fn = get_generated_speech(engine)
     refresh(engine)
@@ -177,7 +185,10 @@ end
 
 ### Run tests ###
 
-info("test: hts engine properties")
+info("test: hts_engine setup")
+test_hts_engine_setup()
+
+info("test: hts_engine properties")
 test_hts_engine_properties()
 
 info("test: hts_engine synthesis functions")

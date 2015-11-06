@@ -215,9 +215,9 @@ function load{T<:AbstractString}(engine::HTS_Engine, voices::Vector{T})
     ret = @htscall(:HTS_Engine_load, HTS_Boolean,
                  (Ptr{HTS_Engine}, Ptr{Ptr{Cchar}}, Csize_t),
                  &engine, c_voices, length(c_voices))
-    r = convert(Bool, ret)
-    if !r
-        error("failed to initialize HTS_Engine")
+    success = convert(Bool, ret)
+    if !success
+        error("failed to load hts voice(s)")
     end
 
     engine
@@ -276,8 +276,8 @@ function synthesize_from_fn(engine::HTS_Engine, labelpath)
     end
     ret = @htscall(:HTS_Engine_synthesize_from_fn, HTS_Boolean,
                    (Ptr{HTS_Engine}, Ptr{Cchar}), &engine, labelpath)
-    r = convert(Bool, ret)
-    if !r
+    success = convert(Bool, ret)
+    if !success
         error("failed to synthesize waveform")
     end
 end
@@ -291,8 +291,8 @@ function synthesize_from_strings(engine::HTS_Engine, lines)
     ret = @htscall(:HTS_Engine_synthesize_from_strings, HTS_Boolean,
                    (Ptr{HTS_Engine}, Ptr{Ptr{Cchar}}, Csize_t),
                    &engine, clines, length(clines))
-    r = convert(Bool, ret)
-    if !r
+    success = convert(Bool, ret)
+    if !success
         error("failed to synthesize waveform")
     end
 end
