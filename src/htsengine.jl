@@ -324,6 +324,6 @@ function save_generated_parameter(engine::HTS_Engine, stream_index, path)
     @assert fp != C_NULL
     @htscall(:HTS_Engine_save_generated_parameter, Void,
              (Ptr{HTS_Engine}, Csize_t, Ptr{Void}),
-             &engine, stream_index, fp)
+             &engine, stream_index-1, fp)
     ccall(:fclose, Void, (Ptr{Void},), fp)
 end
