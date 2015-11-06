@@ -80,6 +80,17 @@ function test_hts_engine_properties()
         end
     end
 
+    open(labelpath) do f
+        synthesize_from_strings(engine, readlines(f))
+    end
+
+    @test get_total_state(engine) > 0
+    for state_index in 1:get_nstate(engine)
+        @test get_state_duration(engine, state_index) > 0
+    end
+    @test get_total_frame(engine) > 0
+    @test get_nsamples(engine) > 0
+
     clear(engine)
 end
 
@@ -100,6 +111,7 @@ function test_hts_engine_synthesis_funcs()
 
     # should be same
     @test synthesized_fn == synthesized_strings
+    @test length(synthesized_fn) == get_nsamples(engine)
 end
 
 function test_hts_engine_fullcontext_label()

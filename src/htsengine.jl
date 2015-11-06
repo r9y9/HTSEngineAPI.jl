@@ -169,13 +169,14 @@ end
 
 ###  Getter for state
 
+# NOTE: get_state_duration must be called after synthesis
 for (name, rettype, argtype) in [
                                  (:get_state_duration, Csize_t, Csize_t)
                                  ]
     fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine, state_index)
-            @assert index > 0 && index <= get_nstate(engine)
+            @assert state_index > 0 && state_index <= get_nstate(engine)
             @htscall($fsymbol, $rettype, (Ptr{HTS_Engine}, $argtype),
                      &engine, state_index-1)
         end
