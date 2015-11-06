@@ -12,6 +12,7 @@ labelpath = joinpath(dirname(@__FILE__), "data","nitech_jp_atr503_m001_a01.lab")
 
 function test_hts_engine_properties()
     engine = HTSEngine()
+
     for (name, val) in [
                         (:sampling_frequency, 48000),
                         (:fperiod, 240),
@@ -81,9 +82,6 @@ function test_hts_engine_properties()
 
     clear(engine)
 end
-
-info("test: hts engine properties")
-test_hts_engine_properties()
 
 function test_hts_engine_synthesis_funcs()
     engine = HTSEngine(mei_htsvoice)
@@ -159,6 +157,9 @@ function test_hts_engine_synthesis_and_save_wav()
 end
 
 ### Run tests ###
+
+info("test: hts engine properties")
+test_hts_engine_properties()
 
 info("test: hts_engine synthesis functions")
 test_hts_engine_synthesis_funcs()
