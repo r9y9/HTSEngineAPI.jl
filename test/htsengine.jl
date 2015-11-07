@@ -17,6 +17,16 @@ function test_hts_engine_setup()
     engine = HTS_Engine(mei_htsvoice)
 end
 
+function test_htscall()
+    engine = HTS_Engine(mei_htsvoice)
+    synthesize_from_fn(engine, labelpath)
+
+    # Get number of generated samples directly from GStream
+    nsamples = signed(@htscall(:HTS_GStreamSet_get_total_nsamples, Csize_t,
+                               (Ptr{HTS_GStreamSet},), &engine.gss))
+    @test get_nsamples(engine) == nsamples
+end
+
 function test_hts_engine_properties()
     engine = HTS_Engine()
 
@@ -187,6 +197,9 @@ end
 
 info("test: hts_engine setup")
 test_hts_engine_setup()
+
+info("test: @htscall")
+test_htscall()
 
 info("test: hts_engine properties")
 test_hts_engine_properties()

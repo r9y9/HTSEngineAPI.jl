@@ -34,3 +34,20 @@ synthesized = get_generated_speech(engine)
 # Save to wav file
 save_riff(engine, "synthesized.wav")
 ```
+
+## @htscall
+
+For now `HTS_Engine_xxx` are only wrapped in Julia, however, you can call any function in libhts_engine_API with @htscall.
+
+e.g.
+
+```jl
+using HTSEngineAPI
+
+engine = HTS_Engine("your_hts_voice_path")
+synthesize_from_fn(engine, "your_fullcontext_label_path")
+
+# Get number of generated samples directly from GStream
+nsamples = @htscall(:HTS_GStreamSet_get_total_nsamples, Csize_t,
+                   (Ptr{HTS_GStreamSet},), &engine.gss))
+```

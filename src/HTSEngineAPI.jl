@@ -8,6 +8,8 @@ speech synthesis system (HTS).
 module HTSEngineAPI
 
 export
+    @htscall, # e.g. @htscall(:HTS_Engine_clear, Void, (Ptr{HTS_Engine},), &engine)
+
     # Internal types
     HTS_Audio,
     HTS_Window,
