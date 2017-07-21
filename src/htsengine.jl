@@ -1,7 +1,7 @@
 """
 HTS_Engine is the main interface for hts_engine_API
 """
-type HTS_Engine
+mutable struct HTS_Engine
     condition::HTS_Condition
     audio::HTS_Audio
     ms::HTS_ModelSet
@@ -24,7 +24,7 @@ function HTS_Engine(voices)
 end
 
 for name in [:initialize, :refresh, :clear]
-    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    fsymbol = QuoteNode(Symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine)
             @htscall($fsymbol, Void, (Ptr{HTS_Engine},), &engine)
@@ -48,7 +48,7 @@ for (name, argtype) in [
                          (:set_beta, Cdouble),
                          (:add_half_tone, Cdouble)
                          ]
-    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    fsymbol = QuoteNode(Symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine, val)
             @htscall($fsymbol, Void, (Ptr{HTS_Engine}, $argtype), &engine, val)
@@ -62,7 +62,7 @@ for (name, argt1, argt2) in [
                              (:set_msd_threshold, Csize_t, Cdouble),
                              (:set_gv_weight, Csize_t, Cdouble)
                              ]
-    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    fsymbol = QuoteNode(Symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine, stream_index, val)
             @assert stream_index > 0 && stream_index <= get_nstream(engine)
@@ -77,7 +77,7 @@ end
 for (name, argt1, argt2) in [
                              (:set_duration_interpolation_weight, Csize_t, Cdouble)
                              ]
-    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    fsymbol = QuoteNode(Symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine, voice_index, val)
             @assert voice_index > 0 && voice_index <= get_nvoices(engine)
@@ -95,7 +95,7 @@ for (name, argt1, argt2, argt3) in [
                                     (:set_gv_interpolation_weight,
                                      Csize_t, Csize_t, Cdouble)
                                     ]
-    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    fsymbol = QuoteNode(Symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine, voice_index, stream_index, val)
             @assert voice_index > 0 && voice_index <= get_nvoices(engine)
@@ -123,7 +123,7 @@ for (name, rettype) in [
                         (:get_total_frame, Csize_t),
                         (:get_nsamples, Csize_t)
                         ]
-    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    fsymbol = QuoteNode(Symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine)
             r = @htscall($fsymbol, $rettype, (Ptr{HTS_Engine},), &engine)
@@ -138,7 +138,7 @@ for (name, rettype, argtype) in [
                                  (:get_msd_threshold, Cdouble, Csize_t),
                                  (:get_gv_weight, Cdouble, Csize_t)
                                  ]
-    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    fsymbol = QuoteNode(Symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine, stream_index)
             @assert stream_index > 0 && stream_index <= get_nstream(engine)
@@ -154,7 +154,7 @@ for (name, rettype, argtype) in [
                                  (:get_duration_interpolation_weight,
                                   Cdouble, Csize_t)
                                  ]
-    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    fsymbol = QuoteNode(Symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine, voice_index)
             @assert voice_index > 0 && voice_index <= get_nvoices(engine)
@@ -170,7 +170,7 @@ end
 for (name, rettype, argtype) in [
                                  (:get_state_duration, Csize_t, Csize_t)
                                  ]
-    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    fsymbol = QuoteNode(Symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine, state_index)
             @assert state_index > 0 && state_index <= get_nstate(engine)
@@ -188,7 +188,7 @@ for (name, rettype, argt1, argt2) in [
                                       (:get_gv_interpolation_weight,
                                        Cdouble, Csize_t, Csize_t)
                                       ]
-    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    fsymbol = QuoteNode(Symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine, voice_index, stream_index)
             @assert voice_index > 0 && voice_index <= get_nvoices(engine)
@@ -233,13 +233,13 @@ end
 function get_fullcontext_label_format(engine::HTS_Engine)
     ret = @htscall(:HTS_Engine_get_fullcontext_label_format,
                    Ptr{Cchar}, (Ptr{HTS_Engine},), &engine)
-    bytestring(ret)
+    unsafe_string(ret)
 end
 
 function get_fullcontext_label_version(engine::HTS_Engine)
     ret = @htscall(:HTS_Engine_get_fullcontext_label_version,
                    Ptr{Cchar}, (Ptr{HTS_Engine},), &engine)
-    bytestring(ret)
+    unsafe_string(ret)
 end
 
 function get_generated_parameter(engine::HTS_Engine,
@@ -302,7 +302,7 @@ for (name, mode) = [
                     (:save_generated_speech, "wb"),
                     (:save_riff, "wb")
                     ]
-    fsymbol = QuoteNode(symbol(:HTS_Engine_, name))
+    fsymbol = QuoteNode(Symbol(:HTS_Engine_, name))
     @eval begin
         function $name(engine::HTS_Engine, path)
             fp = ccall(:fopen, Ptr{Void}, (Ptr{Cchar}, Ptr{Cchar}),

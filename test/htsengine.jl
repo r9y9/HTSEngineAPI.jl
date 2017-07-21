@@ -39,12 +39,12 @@ function test_hts_engine_properties()
                         (:alpha, 0.42),
                         (:beta, 0.01)
                        ]
-        setter = eval(symbol(:set_, name))
-        getter = eval(symbol(:get_, name))
+        setter = eval(Symbol(:set_, name))
+        getter = eval(Symbol(:get_, name))
         println("test setter/getter property: $name")
 
         setter(engine, val)
-        @test_approx_eq getter(engine) val
+        @test getter(engine) ≈ val
     end
 
     # no throws
@@ -59,12 +59,12 @@ function test_hts_engine_properties()
                             (:msd_threshold, 0.5),
                             (:gv_weight, 0.5)
                             ]
-            setter = eval(symbol(:set_, name))
-            getter = eval(symbol(:get_, name))
+            setter = eval(Symbol(:set_, name))
+            getter = eval(Symbol(:get_, name))
             println("test setter/getter property: $name")
 
             setter(engine, stream_index, val)
-            @test_approx_eq getter(engine, stream_index) val
+            @test getter(engine, stream_index) ≈ val
         end
     end
 
@@ -72,12 +72,12 @@ function test_hts_engine_properties()
         for (name, val) in [
                             (:duration_interpolation_weight, 0.5)
                             ]
-            setter = eval(symbol(:set_, name))
-            getter = eval(symbol(:get_, name))
+            setter = eval(Symbol(:set_, name))
+            getter = eval(Symbol(:get_, name))
             println("test setter/getter property: $name")
 
             setter(engine, voice_index, val)
-            @test_approx_eq getter(engine, voice_index) val
+            @test getter(engine, voice_index) ≈ val
         end
     end
 
@@ -87,12 +87,12 @@ function test_hts_engine_properties()
                                 (:parameter_interpolation_weight, 0.5),
                                 (:gv_interpolation_weight, 0.5)
                                 ]
-                setter = eval(symbol(:set_, name))
-                getter = eval(symbol(:get_, name))
+                setter = eval(Symbol(:set_, name))
+                getter = eval(Symbol(:get_, name))
                 println("test setter/getter property: $name")
 
                 setter(engine, voice_index, stream_index, val)
-                @test_approx_eq getter(engine, voice_index, stream_index) val
+                @test getter(engine, voice_index, stream_index) ≈ val
             end
         end
     end

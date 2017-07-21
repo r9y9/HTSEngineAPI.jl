@@ -1,8 +1,8 @@
 ### Internal types ###
 
-typealias HTS_Boolean Cchar
+const HTS_Boolean = Cchar
 
-immutable HTS_Audio
+struct HTS_Audio
     sampling_frequency::Csize_t
     max_buff_size::Csize_t
     buff::Ptr{Cshort}
@@ -12,7 +12,7 @@ immutable HTS_Audio
     HTS_Audio() = new(0, 0, 0, 0, 0)
 end
 
-immutable HTS_Window
+struct HTS_Window
     size::Csize_t
     l_width::Ptr{Cint}
     r_width::Ptr{Cint}
@@ -22,14 +22,14 @@ immutable HTS_Window
     HTS_Window() = new(0, 0, 0, 0, 0)
 end
 
-immutable HTS_Pattern
+struct HTS_Pattern
     string::Ptr{Cchar}
     next::Ptr{HTS_Pattern}
 
     HTS_Pattern() = new(0, 0)
 end
 
-immutable HTS_Question
+struct HTS_Question
     string::Ptr{Cchar}
     head::Ptr{HTS_Pattern}
     next::Ptr{HTS_Question}
@@ -37,7 +37,7 @@ immutable HTS_Question
     HTS_Question() = new(0, 0, 0)
 end
 
-immutable HTS_Node
+struct HTS_Node
     index::Cint
     pdf::Csize_t
     yes::Ptr{HTS_Node}
@@ -48,7 +48,7 @@ immutable HTS_Node
     HTS_Node() = new(0, 0, 0, 0, 0, 0)
 end
 
-immutable HTS_Tree
+struct HTS_Tree
     head::Ptr{HTS_Pattern}
     next::Ptr{HTS_Tree}
     root::Ptr{HTS_Node}
@@ -57,7 +57,7 @@ immutable HTS_Tree
     HTS_Tree() = new(0, 0, 0, 0)
 end
 
-immutable HTS_Model
+struct HTS_Model
     vector_length::Csize_t
     num_windows::Csize_t
     is_msd::HTS_Boolean
@@ -70,7 +70,7 @@ immutable HTS_Model
     HTS_Model() = new(0, 0, 0, 0, 0, 0, 0, 0)
 end
 
-immutable HTS_ModelSet
+struct HTS_ModelSet
     hts_voice_version::Ptr{Cchar}
     sampling_frequency::Csize_t
     frame_period::Csize_t
@@ -90,7 +90,7 @@ immutable HTS_ModelSet
     HTS_ModelSet() = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 end
 
-immutable HTS_LabelString
+struct HTS_LabelString
     next::Ptr{HTS_LabelString}
     name::Ptr{Cchar}
     start::Cdouble
@@ -99,14 +99,14 @@ immutable HTS_LabelString
     HTS_LabelString() = new(0, 0, 0, 0)
 end
 
-immutable HTS_Label
+struct HTS_Label
     head::Ptr{HTS_LabelString}
     size::Csize_t
 
     HTS_Label() = new(0, 0)
 end
 
-immutable HTS_SStream
+struct HTS_SStream
     vector_length::Csize_t
     mean::Ptr{Ptr{Cdouble}}
     vari::Ptr{Ptr{Cdouble}}
@@ -122,7 +122,7 @@ immutable HTS_SStream
     HTS_SStream() = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 end
 
-immutable HTS_SStreamSet
+struct HTS_SStreamSet
     sstream::Ptr{HTS_SStream}
     nstream::Csize_t
     nstate::Csize_t
@@ -133,7 +133,7 @@ immutable HTS_SStreamSet
     HTS_SStreamSet() = new(0, 0, 0, 0, 0, 0)
 end
 
-immutable HTS_SMatrices
+struct HTS_SMatrices
     mean::Ptr{Ptr{Cdouble}}
     ivar::Ptr{Ptr{Cdouble}}
     g::Ptr{Cdouble}
@@ -143,7 +143,7 @@ immutable HTS_SMatrices
     HTS_SMatrices() = new(0, 0, 0, 0, 0)
 end
 
-immutable HTS_PStream
+struct HTS_PStream
     vector_length::Csize_t
     length::Csize_t
     width::Csize_t
@@ -162,7 +162,7 @@ immutable HTS_PStream
     HTS_PStream() = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 end
 
-immutable HTS_PStreamSet
+struct HTS_PStreamSet
     pstream::Ptr{HTS_PStream}
     nstream::Csize_t
     total_frame::Csize_t
@@ -170,14 +170,14 @@ immutable HTS_PStreamSet
     HTS_PStreamSet() = new(0, 0, 0)
 end
 
-immutable HTS_GStream
+struct HTS_GStream
     vector_length::Csize_t
     par::Ptr{Ptr{Cdouble}}
 
     HTS_GStream() = new(0, 0)
 end
 
-immutable HTS_GStreamSet
+struct HTS_GStreamSet
     total_nsample::Csize_t
     total_frame::Csize_t
     nstream::Csize_t
@@ -187,7 +187,7 @@ immutable HTS_GStreamSet
     HTS_GStreamSet() = new(0, 0, 0, 0, 0)
 end
 
-immutable HTS_Condition
+struct HTS_Condition
     sampling_frequency::Csize_t
     fperiod::Csize_t
     audio_buff_size::Csize_t

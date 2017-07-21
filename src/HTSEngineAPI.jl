@@ -1,4 +1,4 @@
-__precompile__(@unix? true : false)
+__precompile__()
 
 """
 HTSEngineAPI is a wrapper of hts_engine_API that provides speech waveform
